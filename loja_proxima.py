@@ -1,3 +1,12 @@
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "✅ Site da Loja Próxima está rodando no Render!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
 import os
 import webbrowser
 from urllib.parse import urlencode
@@ -14,7 +23,7 @@ gmaps = googlemaps.Client(key=API_KEY)
 
 def geocode_cep(cep: str):
     """Converte um CEP brasileiro em coordenadas (lat, lng) usando Geocoding API."""
-    results = gmaps.geocode(cep + ", Brasil")
+    results = gmaps.geocode(cep + ", Brasil") # type: ignore
     if not results:
         raise ValueError("CEP não encontrado.")
     loc = results[0]["geometry"]["location"]
@@ -22,7 +31,7 @@ def geocode_cep(cep: str):
 
 def buscar_lojas(lat: float, lng: float, termo: str, max_results: int = 10):
     """Busca lojas próximas ao ponto (lat,lng) usando Places Nearby."""
-    places = gmaps.places_nearby(
+    places = gmaps.places_nearby( # type: ignore
         location=(lat, lng),
         rank_by="distance",
         keyword=termo,
@@ -35,7 +44,7 @@ def medir_distancias(origem_latlng, destinos_place_ids):
     if not destinos_place_ids:
         return []
     destinos = [f"place_id:{pid}" for pid in destinos_place_ids]
-    matrix = gmaps.distance_matrix(
+    matrix = gmaps.distance_matrix( # type: ignore
         origins=[origem_latlng],
         destinations=destinos,
         mode="driving",
@@ -63,7 +72,7 @@ def medir_distancias(origem_latlng, destinos_place_ids):
 
 def coords_do_place(place_id: str):
     """Pega lat/lng via Place Details (faz parte da Places API)."""
-    det = gmaps.place(place_id=place_id, language="pt-BR")
+    det = gmaps.place(place_id=place_id, language="pt-BR") # type: ignore
     res = det.get("result", {})
     loc = res.get("geometry", {}).get("location", {})
     if not loc:
